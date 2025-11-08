@@ -1,22 +1,25 @@
+from fastapi import FastAPI, UploadFile, File
 from fastapi_server.model_helper import predict
-from fastapi import FastAPI
+
 app = FastAPI()
-from fastapi import FastAPI, File, UploadFile
-from model_helper import predict
-app = FastAPI()
+
+
+@app.get("/")
+def home():
+    return {"message": "Car Damage Detection API Running ✅"}
 
 
 @app.post("/predict")
 async def get_prediction(file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
-        image_path ="temp_file.jpg"
-        with open(image_path, "wb") as f:
+        temp_path = "temp.jpg"
+
+        with open(temp_path, "wb") as f:
             f.write(image_bytes)
 
-        prediction = predict(image_path)
-        return {"prediction": prediction}
+        result = predict(temp_path)
+        return result
+
     except Exception as e:
         return {"error": str(e)}
-
-
